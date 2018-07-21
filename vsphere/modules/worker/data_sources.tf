@@ -28,6 +28,6 @@ data "template_file" "ign" {
   vars {
     hostname      = "${var.name}-worker-${count.index + 1}.${var.hostname_suffix}"
     hostname_path = "${var.hostname_path}"
-    cloud_config  = "${base64encode(element(split("`", var.cloud_init), count.index))}"
+    cloud_config  = "${base64encode(element(split(",", var.cloud_init), count.index))}"
   }
 }
