@@ -1,4 +1,3 @@
-# Build the Go binaries using a multi-stage build phase named "golang"
 FROM golang:1.10.3-alpine3.7 as golang
 LABEL maintainer="Andrew Kutz <akutz@vmware.com>"
 
@@ -22,9 +21,7 @@ RUN go get -d github.com/vmware/govmomi && \
         checkout -b v${GOVC_VERSION} v${GOVC_VERSION} && \
     go install github.com/vmware/govmomi/govc
 
-#FROM crosscloudci/debian-go:latest
-FROM alpine:3.7
-LABEL maintainer="Denver Williams <denver@debian.nz>"
+#LABEL maintainer="Denver Williams <denver@debian.nz>"
 ENV KUBECTL_VERSION=v1.8.1
 ENV HELM_VERSION=v2.9.1
 # PIN to Commit on Master
@@ -65,15 +62,12 @@ RUN curl -sSL https://storage.googleapis.com/kubernetes-helm/helm-${HELM_VERSION
 RUN curl -sSLO https://releases.hashicorp.com/terraform/$TERRAFORM_VERSION/terraform_"${TERRAFORM_VERSION}"_linux_$ARC.zip && \
     unzip terraform_"${TERRAFORM_VERSION}"_linux_${ARC}.zip -d /usr/bin
 
-# Copy the Terraform providers from the golang build stage
-COPY --from=golang /go/bin/terraform-provider-* /usr/local/bin/
-
 # Write the configuration file Terraform uses to query available providers
 # and their binaries
 RUN echo providers { >> ~/.terraformrc && \
-  echo '    gzip = "/usr/local/bin/terraform-provider-gzip"' >> ~/.terraformrc && \
-  echo '    etcdiscovery = "/usr/local/bin/terraform-provider-etcdiscovery"' >> ~/.terraformrc && \
-  echo '    ibm = "/usr/local/bin/terraform-provider-ibm"' >> ~/.terraformrc && \
+  echo '    gzip = "/go/bin/terraform-provider-gzip"' >> ~/.terraformrc && \
+  echo '    etcdiscovery = "/go/bin/terraform-provider-etcdiscovery"' >> ~/.terraformrc && \
+  echo '    ibm = "/go/bin/terraform-provider-ibm"' >> ~/.terraformrc && \
   echo } >> ~/.terraformrc
 
 

@@ -448,9 +448,9 @@ elif [[ "$CLOUD_CMD" = "vsphere-deploy" || \
     _retry "❤ Ensure that ClusterRoles are available" kubectl get ClusterRole.v1.rbac.authorization.k8s.io
     _retry "❤ Ensure that ClusterRoleBindings are available" kubectl get ClusterRoleBinding.v1.rbac.authorization.k8s.io
 
-    kubectl create -f ./rbac/ || true
+    kubectl create -f ../rbac/
     _retry "❤ Ensure that worker node is ready" kubectl get nodes
-    kubectl create -f ./addons/ || true
+    kubectl create -f ../addons/
 
 fi
 # End vSphere
