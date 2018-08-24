@@ -2,7 +2,7 @@
 # Usage
 #
 # provision.sh shell
-# provision.sh <provider>-<command> <name> <config-backend>
+# provision.sh <provider>-<command> <name> <config-backend> <data-folder>
 #
 
 # If the first argument is "shell" then exec into a shell and abandon
@@ -12,6 +12,7 @@ if [ "$1" = "shell" ]; then exec /bin/bash; fi
 # Initialize the configuration properties based on the command-line
 # arguments OR on the corresponding environment variables.
 CLOUD_CMD=$CLOUD-$COMMAND
+DATA_FOLDER=$(pwd)/data
 if [ ! "$1" = "" ]; then CLOUD_CMD=$1; fi
 if [ ! "$2" = "" ]; then NAME=$2; fi
 if [ ! "$3" = "" ]; then BACKEND=$3; fi
@@ -30,7 +31,7 @@ NC='\033[0m' # No Color
 
 # Setup Enviroment Using $NAME
 export TF_VAR_name="$NAME"
-export TF_VAR_data_dir=$(pwd)/data/"$DATA_FOLDER"
+export TF_VAR_data_dir="$DATA_FOLDER"
 export TF_VAR_packet_api_key=${PACKET_AUTH_TOKEN}
 
 # Configure Artifacts
@@ -446,6 +447,10 @@ elif [[ "$CLOUD_CMD" = "vsphere-deploy" || \
     _retry "❤ Ensure that the kube-system namespaces exists" kubectl get namespace kube-system
     _retry "❤ Ensure that ClusterRoles are available" kubectl get ClusterRole.v1.rbac.authorization.k8s.io
     _retry "❤ Ensure that ClusterRoleBindings are available" kubectl get ClusterRoleBinding.v1.rbac.authorization.k8s.io
+
+    kubectl create -f ./rbac/ || true
+    _retry "❤ Ensure that worker node is ready" kubectl get nodes
+    kubectl create -f ./addons/ || true
 
 fi
 # End vSphere

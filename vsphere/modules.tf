@@ -2,7 +2,7 @@ module "folder" {
   source = "./modules/folder"
 
   datacenter  = "${var.datacenter}"
-  folder_path = "${var.name}"
+  folder_path = "Workloads/k8s-conformance/${var.name}"
 }
 
 module "resource_pool" {

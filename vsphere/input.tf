@@ -71,7 +71,7 @@ variable "datacenter" {
 }
 
 variable "resource_pool" {
-  default = "Compute-ResourcePool"
+  default = "k8s-conformance"
 }
 
 variable "datastore_name" {
@@ -84,15 +84,15 @@ variable "vm_folder" {
 
 # Master Configuration
 variable "master_num_cpu" {
-  default = "2"
+  default = "8"
 }
 
 variable "master_num_cores_per_socket" {
-  default = "2"
+  default = "8"
 }
 
 variable "master_memory" {
-  default = "4096"
+  default = "16384"
 }
 
 variable "master_node_count" {
@@ -100,24 +100,24 @@ variable "master_node_count" {
 }
 
 variable "master_network_name" {
-  default = "VM Network"
+  default = "VMC Networks/sddc-cgw-network-1"
 }
 
 variable "master_template_name" {
-  default = "coreos_production_vmware_ova"
+  default = "Templates/coreos_production_vmware_ova"
 }
 
 # Worker Configuration
 variable "worker_num_cpu" {
-  default = "2"
+  default = "8"
 }
 
 variable "worker_num_cores_per_socket" {
-  default = "2"
+  default = "8"
 }
 
 variable "worker_memory" {
-  default = "4096"
+  default = "16384"
 }
 
 variable "worker_node_count" {
@@ -125,11 +125,11 @@ variable "worker_node_count" {
 }
 
 variable "worker_network_name" {
-  default = "VM Network"
+  default = "VMC Networks/sddc-cgw-network-1"
 }
 
 variable "worker_template_name" {
-  default = "coreos_production_vmware_ova"
+  default = "Templates/coreos_production_vmware_ova"
 }
 
 # Kubernetes configuration
@@ -165,6 +165,11 @@ variable "dns_service_ip" {
   default = "100.64.0.10"
 }
 
+
+variable "k8s_version" {
+  default = "v1.11.2"
+}
+
 # Deployment Artifact Versions
 variable "etcd_artifact" {
   default = "https://storage.googleapis.com/etcd/v3.2.8/etcd-v3.2.8-linux-amd64.tar.gz"
@@ -179,23 +184,23 @@ variable "cni_plugins_artifact" {
 }
 
 variable "kubelet_artifact" {
-  default = "https://storage.googleapis.com/kubernetes-release/release/v1.10.1/bin/linux/amd64/kubelet"
+  default = "https://storage.googleapis.com/kubernetes-release/release/v1.11.2/bin/linux/amd64/kubelet"
 }
 
 variable "kube_apiserver_artifact" {
-  default = "https://storage.googleapis.com/kubernetes-release/release/v1.10.1/bin/linux/amd64/kube-apiserver"
+  default = "https://storage.googleapis.com/kubernetes-release/release/v1.11.2/bin/linux/amd64/kube-apiserver"
 }
 
 variable "kube_controller_manager_artifact" {
-  default = "https://storage.googleapis.com/kubernetes-release/release/v1.10.1/bin/linux/amd64/kube-controller-manager"
+  default = "https://storage.googleapis.com/kubernetes-release/release/v1.11.2/bin/linux/amd64/kube-controller-manager"
 }
 
 variable "kube_scheduler_artifact" {
-  default = "https://storage.googleapis.com/kubernetes-release/release/v1.10.1/bin/linux/amd64/kube-scheduler"
+  default = "https://storage.googleapis.com/kubernetes-release/release/v1.11.2/bin/linux/amd64/kube-scheduler"
 }
 
 variable "kube_proxy_artifact" {
-  default = "https://storage.googleapis.com/kubernetes-release/release/v1.10.1/bin/linux/amd64/kube-proxy"
+  default = "https://storage.googleapis.com/kubernetes-release/release/v1.11.2/bin/linux/amd64/kube-proxy"
 }
 
 variable "kube_proxy_image" {
@@ -203,5 +208,5 @@ variable "kube_proxy_image" {
 }
 
 variable "kube_proxy_tag" {
-  default = "v1.10.1"
+  default = "v1.11.2"
 }
