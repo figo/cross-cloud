@@ -195,6 +195,10 @@ variable "kube_controller_manager_artifact" {
   default = "https://storage.googleapis.com/kubernetes-release/release/v1.11.2/bin/linux/amd64/kube-controller-manager"
 }
 
+variable "cloud_controller_manager_artifact" {
+  default = "https://storage.googleapis.com/kubernetes-release/release/v1.11.2/bin/linux/amd64/cloud-controller-manager"
+}
+
 variable "kube_scheduler_artifact" {
   default = "https://storage.googleapis.com/kubernetes-release/release/v1.11.2/bin/linux/amd64/kube-scheduler"
 }

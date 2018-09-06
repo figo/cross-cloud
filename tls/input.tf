@@ -44,6 +44,18 @@ variable "tls_controller_cert_ip_addresses" {}
 variable "tls_controller_cert_dns_names" {}
 
 
+variable "tls_cloudcontroller_cert_subject_common_name" {}
+variable "tls_cloudcontroller_cert_subject_locality" {}
+variable "tls_cloudcontroller_cert_subject_organization" {}
+variable "tls_cloudcontroller_cert_subject_organization_unit" {}
+variable "tls_cloudcontroller_cert_subject_province" {}
+variable "tls_cloudcontroller_cert_subject_country" {}
+variable "tls_cloudcontroller_cert_validity_period_hours" {}
+variable "tls_cloudcontroller_cert_early_renewal_hours" {}
+variable "tls_cloudcontroller_cert_ip_addresses" {}
+variable "tls_cloudcontroller_cert_dns_names" {}
+
+
 variable "tls_scheduler_cert_subject_common_name" {}
 variable "tls_scheduler_cert_subject_locality" {}
 variable "tls_scheduler_cert_subject_organization" {}

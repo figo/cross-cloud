@@ -38,7 +38,7 @@ module "master" {
 }
 
 module "master_templates" {
-  source = "../master_templates-v1.10.0"
+  source = "../master_templates-v1.11.0"
 
   hostname        = "${var.name}-master"
   hostname_suffix = "${var.name}.${var.cloud_provider}.local"
@@ -52,6 +52,7 @@ module "master_templates" {
   etcd_artifact                    = "${var.etcd_artifact}"
   kube_apiserver_artifact          = "${var.kube_apiserver_artifact}"
   kube_controller_manager_artifact = "${var.kube_controller_manager_artifact}"
+  cloud_controller_manager_artifact = "${var.cloud_controller_manager_artifact}"
   kube_scheduler_artifact          = "${var.kube_scheduler_artifact}"
 
   cloud_provider = "${var.cloud_provider}"
@@ -67,6 +68,8 @@ module "master_templates" {
   apiserver_key     = "${module.tls.apiserver_key}"
   controller        = "${module.tls.controller}"
   controller_key    = "${module.tls.controller_key}"
+  cloudcontroller        = "${module.tls.cloudcontroller}"
+  cloudcontroller_key    = "${module.tls.cloudcontroller_key}"
   scheduler         = "${module.tls.scheduler}"
   scheduler_key     = "${module.tls.scheduler_key}"
   cloud_config_file = "${data.template_file.cloud_conf.rendered}"
@@ -96,7 +99,7 @@ module "worker" {
 }
 
 module "worker_templates" {
-  source = "../worker_templates-v1.10.0"
+  source = "../worker_templates-v1.11.0"
 
   hostname        = "${var.name}-worker"
   hostname_suffix = "${var.name}.${var.cloud_provider}.local"
@@ -110,6 +113,8 @@ module "worker_templates" {
   kube_proxy_image     = "${var.kube_proxy_image}"
   kube_proxy_tag       = "${var.kube_proxy_tag}"
 
+  controller          = "${module.tls.controller}"
+  controller_key      = "${module.tls.controller_key}"
   cloud_provider      = "${var.cloud_provider}"
   cloud_config        = "${var.cloud_config}"
   cluster_domain      = "${var.cluster_domain}"
@@ -191,6 +196,17 @@ module "tls" {
   tls_controller_cert_early_renewal_hours       = "100"
   tls_controller_cert_ip_addresses              = "127.0.0.1"
   tls_controller_cert_dns_names                 = "kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster.local"
+
+  tls_cloudcontroller_cert_subject_common_name       = "system:cloud-controller-manager"
+  tls_cloudcontroller_cert_subject_locality          = "San Francisco"
+  tls_cloudcontroller_cert_subject_organization      = "system:cloud-controller-manager"
+  tls_cloudcontroller_cert_subject_organization_unit = "Kubernetes"
+  tls_cloudcontroller_cert_subject_province          = "California"
+  tls_cloudcontroller_cert_subject_country           = "US"
+  tls_cloudcontroller_cert_validity_period_hours     = "1000"
+  tls_cloudcontroller_cert_early_renewal_hours       = "100"
+  tls_cloudcontroller_cert_ip_addresses              = "127.0.0.1"
+  tls_cloudcontroller_cert_dns_names                 = "kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster.local"
 
   tls_scheduler_cert_subject_common_name       = "system:kube-scheduler"
   tls_scheduler_cert_subject_locality          = "San Francisco"

@@ -1,0 +1,9 @@
+CONTROLLER_OPTS="--cluster-cidr=${ pod_cidr } \
+--cluster-name=${ cluster_name } \
+--leader-elect=true \
+--kubeconfig=/var/lib/kube-controller-manager/kubeconfig \
+--use-service-account-credentials=true \
+--cloud-provider=${ cloud_provider } ${ cloud_config } \
+--allocate-node-cidrs=true \
+--configure-cloud-routes=true \
+--v=10"

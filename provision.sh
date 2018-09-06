@@ -56,6 +56,10 @@ if [ ! -e $KUBE_CONTROLLER_MANAGER_ARTIFACT ] ; then
     export TF_VAR_kube_controller_manager_artifact=$KUBE_CONTROLLER_MANAGER_ARTIFACT
 fi
 
+if [ ! -e $CLOUD_CONTROLLER_MANAGER_ARTIFACT ] ; then
+    export TF_VAR_cloud_controller_manager_artifact=$CLOUD_CONTROLLER_MANAGER_ARTIFACT
+fi
+
 if [ ! -e $KUBE_SCHEDULER_ARTIFACT ] ; then
     export TF_VAR_kube_scheduler_artifact=$KUBE_SCHEDULER_ARTIFACT
 fi
