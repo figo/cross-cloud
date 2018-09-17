@@ -96,6 +96,27 @@ data "template_file" "proxy_kubeconfig" {
   }
 }
 
+resource "gzip_me" "cni_bridge" {
+  input = "${ data.template_file.cni_bridge.rendered }"
+}
+
+data "template_file" "cni_bridge" {
+  template = "${ file( "${ path.module }/cni-bridge" )}"
+
+  vars {
+    pod_cidr = "${ var.pod_cidr }"
+  }
+}
+
+resource "gzip_me" "cni_loopback" {
+  input = "${ data.template_file.cni_loopback.rendered }"
+}
+
+data "template_file" "cni_loopback" {
+  template = "${ file( "${ path.module }/cni-loopback" )}"
+}
+
+
 resource "gzip_me" "kube_proxy" {
   count = "${ var.worker_node_count}"
   input = "${ element(data.template_file.kube-proxy.*.rendered, count.index) }"
@@ -135,6 +156,8 @@ data "template_file" "worker" {
     kubelet_artifact             = "${ var.kubelet_artifact }"
     cni_artifact                 = "${ var.cni_artifact }"
     cni_plugins_artifact         = "${ var.cni_plugins_artifact }"
+    cni_bridge                   = "${ gzip_me.cni_bridge.output }"
+    cni_loopback                 = "${ gzip_me.cni_loopback.output }"
     kube_controller_manager_kubeconfig = "${ gzip_me.kube_controller_manager_kubeconfig.output }"
     dns_conf                     = "${ gzip_me.dns_conf.output }"
     dns_dhcp                     = "${ gzip_me.dns_dhcp.output }"
