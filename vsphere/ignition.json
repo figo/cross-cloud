@@ -42,6 +42,10 @@
   "systemd": {
     "units": [
       {
+        "name": "locksmithd.service",
+        "mask": true
+      },
+      {
         "contents": "[Unit]\nType=oneshot\n\n[Service]\nExecStart=/usr/bin/coreos-cloudinit --from-file /etc/cloud-config.yml\n\n[Install]\nWantedBy=multi-user.target",
         "enabled": true,
         "name": "cloud-init-onboot.service"

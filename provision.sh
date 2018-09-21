@@ -454,7 +454,6 @@ elif [[ "$CLOUD_CMD" = "vsphere-deploy" || \
 
     kubectl create -f ../rbac/
     _retry "❤ Ensure that worker node is ready" kubectl get nodes
-    kubectl create -f ../addons/
 
 fi
 # End vSphere
