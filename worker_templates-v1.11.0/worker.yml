@@ -70,7 +70,7 @@ coreos:
         WantedBy=multi-user.target
 
   update:
-    reboot-strategy: etcd-lock
+    reboot-strategy: off
 
 write-files:
 
@@ -110,11 +110,17 @@ write-files:
     content: |
       ${ proxy_kubeconfig }
 
-  - path: /etc/cni/net.d/10-bridge.conf
+  - path: /run/flannel/subnet.env
     permissions: "0644"
     encoding: "gzip+base64"
     content: |
-      ${ cni_bridge }
+      ${ cni_subnet }
+
+  - path: /etc/cni/net.d/flannel.conf
+    permissions: "0644"
+    encoding: "gzip+base64"
+    content: |
+      ${ cni_flannel }
 
   - path: /etc/cni/net.d/99-loopback.conf
     permissions: "0644"

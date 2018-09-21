@@ -30,17 +30,23 @@ coreos:
         RemainAfterExit=yes
         ExecStartPre=/usr/bin/bash -c "while true; do ping -c1 www.google.com > /dev/null && break; done"
         ExecStartPre=/usr/bin/mkdir --parents /home/kubernetes/bin
+        ExecStartPre=/usr/bin/mkdir --parents /opt/cni/bin
+        ExecStartPre=/usr/bin/mkdir --parents /etc/cni/net.d
         ExecStart=/usr/bin/curl --retry-max-time 120 -L -o /home/kubernetes/bin/etcd.tar.gz ${ etcd_artifact }
         ExecStart=/usr/bin/curl --retry-max-time 120 -L -o /home/kubernetes/bin/kube-apiserver ${ kube_apiserver_artifact }
         ExecStart=/usr/bin/curl --retry-max-time 120 -L -o /home/kubernetes/bin/kube-controller-manager ${ kube_controller_manager_artifact }
-        ExecStart=/usr/bin/curl --retry-max-time 120 -L -o /home/kubernetes/bin/cloud-controller-manager ${ cloud_controller_manager_artifact }
         ExecStart=/usr/bin/curl --retry-max-time 120 -L -o /home/kubernetes/bin/kube-scheduler ${ kube_scheduler_artifact }
+        ExecStart=/usr/bin/curl --retry-max-time 120 -L -o /home/kubernetes/bin/kubelet ${ kubelet_artifact }
+        ExecStart=/usr/bin/curl --retry-max-time 120 -L -o /tmp/cni.tar ${ cni_artifact }
+        ExecStart=/usr/bin/curl --retry-max-time 120 -L -o /tmp/cni-plugins.tar ${ cni_plugins_artifact }
         ExecStart=/usr/bin/tar -xzvf /home/kubernetes/bin/etcd.tar.gz -C /home/kubernetes/bin/ --strip-components=1
+        ExecStart=/usr/bin/tar -xvf /tmp/cni.tar -C /opt/cni/bin/
+        ExecStart=/usr/bin/tar -xvf /tmp/cni-plugins.tar -C /opt/cni/bin/
         ExecStart=/usr/bin/chmod +x /home/kubernetes/bin/etcd
         ExecStart=/usr/bin/chmod +x /home/kubernetes/bin/kube-apiserver
         ExecStart=/usr/bin/chmod +x /home/kubernetes/bin/kube-controller-manager
-        ExecStart=/usr/bin/chmod +x /home/kubernetes/bin/cloud-controller-manager
         ExecStart=/usr/bin/chmod +x /home/kubernetes/bin/kube-scheduler
+        ExecStart=/usr/bin/chmod +x /home/kubernetes/bin/kubelet
 
     - name: etcd.service
       command: start
@@ -149,8 +155,40 @@ coreos:
         [Install]
         WantedBy=multi-user.target
 
+    - name: socat.service
+      command: start
+      content: |
+        [Unit]
+        Description=Install Socat
+        After=docker.service
+        Requires=docker.service
+
+        [Service]
+        Type=oneshot
+        RemainAfterExit=yes
+        ExecStartPre=/usr/bin/mkdir --parents /opt/bin
+        ExecStart=/usr/bin/docker run --rm -v /opt/bin/:/socat/ registry.cncf.ci/cncf/cross-cloud/socat:production cp /output/linux/x86_64/socat /socat
+
+    - name: kubelet.service
+      command: start
+      content: |
+        [Unit]
+        Description=Kubernetes kubelet
+        After=socat.service
+        Requires=socat.service
+
+        [Service]
+        Restart=always
+        RestartSec=10
+        Environment="PATH=/opt/bin/:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+        EnvironmentFile=/etc/default/kubelet
+        ExecStart=/home/kubernetes/bin/kubelet $KUBELET_OPTS
+
+        [Install]
+        WantedBy=multi-user.target
+
   update:
-    reboot-strategy: etcd-lock
+    reboot-strategy: off
 
 
 write-files:
@@ -173,11 +211,6 @@ write-files:
     content: |
       ${ kube_controller_manager }
 
-  - path: /etc/default/cloud-controller-manager
-    encoding: "gzip+base64"
-    content: |
-      ${ cloud_controller_manager }
-  
   - path: /etc/default/kube-scheduler
     encoding: "gzip+base64"
     content: |
@@ -187,11 +220,6 @@ write-files:
     encoding: "gzip+base64"
     content: |
       ${ kube_controller_manager_kubeconfig }
-
-  - path: /var/lib/cloud-controller-manager/kubeconfig
-    encoding: "gzip+base64"
-    content: |
-      ${ cloud_controller_manager_kubeconfig }
 
   - path: /var/lib/kube-scheduler/kubeconfig
     encoding: "gzip+base64"
@@ -234,18 +262,6 @@ write-files:
     content: |
       ${ controller_key }
 
-  - path: /etc/srv/kubernetes/pki/cloudcontroller.crt
-    permissions: "0644"
-    encoding: "gzip+base64"
-    content: |
-      ${ cloudcontroller }
-
-  - path: /etc/srv/kubernetes/pki/cloudcontroller.key
-    permissions: "0644"
-    encoding: "gzip+base64"
-    content: |
-      ${ cloudcontroller_key }
-
   - path: /etc/srv/kubernetes/pki/scheduler.crt
     permissions: "0644"
     encoding: "gzip+base64"
@@ -284,3 +300,67 @@ write-files:
     content: |
       ${ dns_dhcp }
 
+  - path: /etc/default/kubelet
+    permissions: "0644"
+    encoding: "gzip+base64"
+    content: |
+      ${ kubelet }
+
+  - path: /var/lib/kubelet/bootstrap.kubeconfig
+    encoding: "gzip+base64"
+    content: |
+      ${ kubelet_bootstrap_kubeconfig }
+
+  - path: /etc/kubernetes/manifests/kube-proxy.yml
+    permissions: "0644"
+    encoding: "gzip+base64"
+    content: |
+      ${ kube_proxy }
+
+  - path: /var/lib/kube-proxy/kubeconfig
+    permissions: "0644"
+    encoding: "gzip+base64"
+    content: |
+      ${ proxy_kubeconfig }
+
+  - path: /run/flannel/subnet.env
+    permissions: "0644"
+    encoding: "gzip+base64"
+    content: |
+      ${ cni_subnet }
+
+  - path: /etc/cni/net.d/flannel.conf
+    permissions: "0644"
+    encoding: "gzip+base64"
+    content: |
+      ${ cni_flannel }
+
+  - path: /etc/cni/net.d/99-loopback.conf
+    permissions: "0644"
+    encoding: "gzip+base64"
+    content: |
+      ${ cni_loopback }
+
+  - path: /etc/srv/kubernetes/pki/kubelet.crt
+    permissions: "0644"
+    encoding: "gzip+base64"
+    content: |
+      ${ kubelet_crt }
+      
+  - path: /etc/srv/kubernetes/pki/kubelet.key
+    permissions: "0644"
+    encoding: "gzip+base64"
+    content: |
+      ${ kubelet_key }
+
+  - path: /etc/srv/kubernetes/pki/proxy.crt
+    permissions: "0644"
+    encoding: "gzip+base64"
+    content: |
+      ${ proxy }
+      
+  - path: /etc/srv/kubernetes/pki/proxy.key
+    permissions: "0644"
+    encoding: "gzip+base64"
+    content: |
+      ${ proxy_key }

@@ -84,7 +84,7 @@ variable "vm_folder" {
 
 # Master Configuration
 variable "master_num_cpu" {
-  default = "8"
+  default = "16"
 }
 
 variable "master_num_cores_per_socket" {
@@ -92,11 +92,11 @@ variable "master_num_cores_per_socket" {
 }
 
 variable "master_memory" {
-  default = "16384"
+  default = "65536"
 }
 
 variable "master_node_count" {
-  default = "3"
+  default = "1"
 }
 
 variable "master_network_name" {
@@ -109,7 +109,7 @@ variable "master_template_name" {
 
 # Worker Configuration
 variable "worker_num_cpu" {
-  default = "8"
+  default = "16"
 }
 
 variable "worker_num_cores_per_socket" {
@@ -117,11 +117,11 @@ variable "worker_num_cores_per_socket" {
 }
 
 variable "worker_memory" {
-  default = "16384"
+  default = "32768"
 }
 
 variable "worker_node_count" {
-  default = "1"
+  default = "2"
 }
 
 variable "worker_network_name" {
@@ -151,6 +151,14 @@ variable "cluster_domain" {
 
 variable "pod_cidr" {
   default = "100.96.0.0/11"
+}
+
+variable "worker_pod_cidr" {
+  default = "100.96.0.0/20"
+}
+
+variable "master_pod_cidr" {
+  default = "100.96.250.0/20"
 }
 
 variable "service_cidr" {
