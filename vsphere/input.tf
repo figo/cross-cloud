@@ -214,11 +214,3 @@ variable "kube_scheduler_artifact" {
 variable "kube_proxy_artifact" {
   default = "https://storage.googleapis.com/kubernetes-release/release/v1.11.2/bin/linux/amd64/kube-proxy"
 }
-
-variable "kube_proxy_image" {
-  default = "gcr.io/google_containers/kube-proxy"
-}
-
-variable "kube_proxy_tag" {
-  default = "v1.11.2"
-}

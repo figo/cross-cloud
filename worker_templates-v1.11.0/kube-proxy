@@ -1,0 +1,4 @@
+KUBE_PROXY_OPTS="--cluster-cidr=${ pod_cidr } \
+--kubeconfig=/var/lib/kube-proxy/kubeconfig \
+--proxy-mode=iptables \
+--v=2"

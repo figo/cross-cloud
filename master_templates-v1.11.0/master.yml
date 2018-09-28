@@ -37,6 +37,7 @@ coreos:
         ExecStart=/usr/bin/curl --retry-max-time 120 -L -o /home/kubernetes/bin/kube-controller-manager ${ kube_controller_manager_artifact }
         ExecStart=/usr/bin/curl --retry-max-time 120 -L -o /home/kubernetes/bin/kube-scheduler ${ kube_scheduler_artifact }
         ExecStart=/usr/bin/curl --retry-max-time 120 -L -o /home/kubernetes/bin/kubelet ${ kubelet_artifact }
+        ExecStart=/usr/bin/curl --retry-max-time 120 -L -o /home/kubernetes/bin/kube-proxy ${ kube_proxy_artifact }
         ExecStart=/usr/bin/curl --retry-max-time 120 -L -o /tmp/cni.tar ${ cni_artifact }
         ExecStart=/usr/bin/curl --retry-max-time 120 -L -o /tmp/cni-plugins.tar ${ cni_plugins_artifact }
         ExecStart=/usr/bin/tar -xzvf /home/kubernetes/bin/etcd.tar.gz -C /home/kubernetes/bin/ --strip-components=1
@@ -46,6 +47,7 @@ coreos:
         ExecStart=/usr/bin/chmod +x /home/kubernetes/bin/kube-apiserver
         ExecStart=/usr/bin/chmod +x /home/kubernetes/bin/kube-controller-manager
         ExecStart=/usr/bin/chmod +x /home/kubernetes/bin/kube-scheduler
+        ExecStart=/usr/bin/chmod +x /home/kubernetes/bin/kube-proxy
         ExecStart=/usr/bin/chmod +x /home/kubernetes/bin/kubelet
 
     - name: etcd.service
@@ -186,6 +188,24 @@ coreos:
 
         [Install]
         WantedBy=multi-user.target
+    
+    - name: kube-proxy.service
+      command: start
+      content: |
+        [Unit]
+        Description=Kuburnetes Kube Proxy
+        After=kubelet.service
+        Requires=kubelet.service
+
+        [Service]
+        Restart=on-failure
+        RestartSec=5
+        Environment="PATH=/opt/bin/:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+        EnvironmentFile=/etc/default/kube-proxy
+        ExecStart=/home/kubernetes/bin/kube-proxy $KUBE_PROXY_OPTS
+
+        [Install]
+        WantedBy=multi-user.target 
 
   update:
     reboot-strategy: off
@@ -311,7 +331,7 @@ write-files:
     content: |
       ${ kubelet_bootstrap_kubeconfig }
 
-  - path: /etc/kubernetes/manifests/kube-proxy.yml
+  - path: /etc/default/kube-proxy
     permissions: "0644"
     encoding: "gzip+base64"
     content: |

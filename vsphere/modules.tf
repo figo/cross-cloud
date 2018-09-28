@@ -51,8 +51,7 @@ module "master_templates" {
   kubelet_artifact     = "${var.kubelet_artifact}"
   cni_artifact         = "${var.cni_artifact}"
   cni_plugins_artifact = "${var.cni_plugins_artifact}"
-  kube_proxy_image     = "${var.kube_proxy_image}"
-  kube_proxy_tag       = "${var.kube_proxy_tag}"
+  kube_proxy_artifact = "${var.kube_proxy_artifact}"
 
   etcd_artifact                    = "${var.etcd_artifact}"
   kube_apiserver_artifact          = "${var.kube_apiserver_artifact}"
@@ -120,8 +119,7 @@ module "worker_templates" {
   kubelet_artifact     = "${var.kubelet_artifact}"
   cni_artifact         = "${var.cni_artifact}"
   cni_plugins_artifact = "${var.cni_plugins_artifact}"
-  kube_proxy_image     = "${var.kube_proxy_image}"
-  kube_proxy_tag       = "${var.kube_proxy_tag}"
+  kube_proxy_artifact = "${var.kube_proxy_artifact}"
 
   controller          = "${module.tls.controller}"
   controller_key      = "${module.tls.controller_key}"

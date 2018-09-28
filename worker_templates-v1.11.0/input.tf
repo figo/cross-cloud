@@ -6,8 +6,7 @@ variable "hostname_path" {}
 variable "kubelet_artifact" {}
 variable "cni_artifact" {}
 variable "cni_plugins_artifact" {}
-variable "kube_proxy_image" {}
-variable "kube_proxy_tag" {}
+variable "kube_proxy_artifact" {}
 
 variable "controller" {}
 variable "controller_key" {}

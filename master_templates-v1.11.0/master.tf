@@ -150,13 +150,10 @@ resource "gzip_me" "kube_proxy" {
 
 data "template_file" "kube-proxy" {
   count    = "${ var.master_node_count }"
-  template = "${ file( "${ path.module }/kube-proxy.yml" )}"
+  template = "${ file( "${ path.module }/kube-proxy" )}"
 
   vars {
-    master_node      = "${ var.internal_lb_ip }"
     pod_cidr         = "${ var.master_pod_cidr }"
-    kube_proxy_image = "${ var.kube_proxy_image }"
-    kube_proxy_tag   = "${ var.kube_proxy_tag }"
   }
 }
 
@@ -269,6 +266,7 @@ data "template_file" "master" {
     proxy_kubeconfig             = "${ gzip_me.proxy_kubeconfig.output }"
     kubelet_artifact             = "${ var.kubelet_artifact }"
     cni_artifact                 = "${ var.cni_artifact }"
+    kube_proxy_artifact          = "${ var.kube_proxy_artifact }"
     cni_plugins_artifact         = "${ var.cni_plugins_artifact }"
     cni_subnet                   = "${ element(gzip_me.cni_subnet.*.output, count.index) }"
     cni_loopback                 = "${ gzip_me.cni_loopback.output }"
