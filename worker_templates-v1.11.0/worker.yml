@@ -130,12 +130,6 @@ write-files:
     content: |
       ${ proxy_kubeconfig }
 
-  - path: /run/flannel/subnet.env
-    permissions: "0644"
-    encoding: "gzip+base64"
-    content: |
-      ${ cni_subnet }
-
   - path: /etc/cni/net.d/flannel.conf
     permissions: "0644"
     encoding: "gzip+base64"

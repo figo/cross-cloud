@@ -96,21 +96,6 @@ data "template_file" "proxy_kubeconfig" {
   }
 }
 
-resource "gzip_me" "cni_subnet" {
-  count = "${ var.worker_node_count}" 
-  input = "${ element(data.template_file.cni_subnet.*.rendered, count.index) }"
-}
-
-data "template_file" "cni_subnet" {
-  count    = "${ var.worker_node_count }"
-  template = "${ file( "${ path.module }/flannel-subnet.env" )}"
-
-  vars {
-    pod_cidr_subnet = "${ cidrsubnet("${ var.worker_pod_cidr }", 4, count.index)}"
-    pod_cidr = "${ var.pod_cidr}"
-  }
-}
-
 resource "gzip_me" "cni_flannel" {
   input = "${ data.template_file.cni_flannel.rendered }"
 }
@@ -165,7 +150,6 @@ data "template_file" "worker" {
     cni_artifact                 = "${ var.cni_artifact }"
     kube_proxy_artifact          = "${ var.kube_proxy_artifact }"
     cni_plugins_artifact         = "${ var.cni_plugins_artifact }"
-    cni_subnet                   = "${ element(gzip_me.cni_subnet.*.output, count.index) }"
     cni_loopback                 = "${ gzip_me.cni_loopback.output }"
     cni_flannel                  = "${ gzip_me.cni_flannel.output }"
     kube_controller_manager_kubeconfig = "${ gzip_me.kube_controller_manager_kubeconfig.output }"

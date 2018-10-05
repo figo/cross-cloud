@@ -119,25 +119,6 @@ coreos:
         [Install]
         WantedBy=multi-user.target
 
-    - name: cloud-controller-manager.service
-      command: start
-      content: |
-        [Unit]
-        Description=Cloud Controller Manager
-        Documentation=https://github.com/kubernetes/kubernetes
-        After=bins.service
-        Requires=bins.service
-
-        [Service]
-        EnvironmentFile=/etc/default/cloud-controller-manager
-        ExecStart=/home/kubernetes/bin/cloud-controller-manager $CONTROLLER_OPTS
-        
-        Restart=always
-        RestartSec=5
-
-        [Install]
-        WantedBy=multi-user.target
-
     - name: kube-scheduler.service
       command: start
       content: |
@@ -342,12 +323,6 @@ write-files:
     encoding: "gzip+base64"
     content: |
       ${ proxy_kubeconfig }
-
-  - path: /run/flannel/subnet.env
-    permissions: "0644"
-    encoding: "gzip+base64"
-    content: |
-      ${ cni_subnet }
 
   - path: /etc/cni/net.d/flannel.conf
     permissions: "0644"
