@@ -3,11 +3,6 @@ LABEL maintainer="Andrew Kutz <akutz@vmware.com>"
 
 RUN apk --no-cache add git
 
-# Build the IBM Bluemix Terraform provider
-RUN git clone https://github.com/IBM-Bluemix/terraform-provider-ibm.git \
-    $GOPATH/src/github.com/terraform-providers/terraform-provider-ibm && \
-    go install github.com/terraform-providers/terraform-provider-ibm
-
 # Build the Gzip+Base64 Terraform provider Gzip+base64 & ETCD Provider
 RUN go get github.com/jakexks/terraform-provider-gzip
 
@@ -67,20 +62,12 @@ RUN curl -sSLO https://releases.hashicorp.com/terraform/$TERRAFORM_VERSION/terra
 RUN echo providers { >> ~/.terraformrc && \
   echo '    gzip = "/go/bin/terraform-provider-gzip"' >> ~/.terraformrc && \
   echo '    etcdiscovery = "/go/bin/terraform-provider-etcdiscovery"' >> ~/.terraformrc && \
-  echo '    ibm = "/go/bin/terraform-provider-ibm"' >> ~/.terraformrc && \
   echo } >> ~/.terraformrc
 
 
 #Add Terraform Modules
 COPY validate-cluster/ /cncf/validate-cluster/
 
-COPY aws/ /cncf/aws/
-COPY azure/ /cncf/azure/
-COPY ibm/ /cncf/ibm/
-COPY gce/ /cncf/gce/
-COPY gke/ /cncf/gke/
-COPY openstack/ /cncf/openstack/
-COPY packet/ /cncf/packet/
 COPY vsphere/ /cncf/vsphere/
 
 COPY bootstrap/ /cncf/bootstrap/
@@ -98,18 +85,9 @@ COPY file-backend.tf /cncf/
 COPY rbac/ /cncf/rbac/
 COPY addons/ /cncf/addons/
 
-COPY master_templates-v1.7.2/ /cncf/master_templates-v1.7.2/
-COPY master_templates-v1.8.1/ /cncf/master_templates-v1.8.1/
-COPY master_templates-v1.9.0-alpha.1/ /cncf/master_templates-v1.9.0-alpha.1/
-COPY master_templates-v1.9.0/ /cncf/master_templates-v1.9.0/
-COPY master_templates-v1.9.0-dns-etcd/ /cncf/master_templates-v1.9.0-dns-etcd/
 COPY master_templates-v1.10.0/ /cncf/master_templates-v1.10.0/
 COPY master_templates-v1.11.0/ /cncf/master_templates-v1.11.0/
 
-COPY worker_templates-v1.7.2/ /cncf/worker_templates-v1.7.2/
-COPY worker_templates-v1.8.1/ /cncf/worker_templates-v1.8.1/
-COPY worker_templates-v1.9.0-alpha.1/ /cncf/worker_templates-v1.9.0-alpha.1/
-COPY worker_templates-v1.9.0/ /cncf/worker_templates-v1.9.0/
 COPY worker_templates-v1.10.0/ /cncf/worker_templates-v1.10.0/
 COPY worker_templates-v1.11.0/ /cncf/worker_templates-v1.11.0/
 
